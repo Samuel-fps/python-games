@@ -1,7 +1,7 @@
 import pygame
 
 class Ship:
-    """ Ship controller"""
+    """Ship controller"""
 
     def __init__(self, si_game):
         self.screen = si_game.screen
@@ -14,5 +14,5 @@ class Ship:
         self.rect.midbottom = self.screen_rect.midbottom
 
     def blitme(self):
-        """ Draw ship """
+        """Draw ship"""
         self.screen.blit(self.image, self.rect)

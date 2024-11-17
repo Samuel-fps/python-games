@@ -19,16 +19,24 @@ class SpaceInvaders:
 
 
     def run_game(self):
-
+        """Game loop"""
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-            
-            self.screen.fill(self.setting.bg_color)
-            self.ship.blitme()
+            self._check_events()
+            self._update_screen()
 
             pygame.display.flip()
+
+    def _check_events(self):
+        """cCheck inputs"""
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+
+    def _update_screen(self):
+        """Update game screen"""
+        self.screen.fill(self.setting.bg_color)
+        self.ship.blitme()
+
 
 if __name__ == '__main__':
     si = SpaceInvaders()
