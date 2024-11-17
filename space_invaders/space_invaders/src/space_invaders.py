@@ -2,7 +2,7 @@ import sys
 import pygame
 
 from settings import Settings
-from ship import Ship
+from entities.ship import Ship
 
 class SpaceInvaders:
     """Main class to control thegame behavior"""
