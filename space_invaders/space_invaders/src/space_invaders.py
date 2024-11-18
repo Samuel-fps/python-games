@@ -1,10 +1,12 @@
 import sys
 import pygame
+from time import sleep
 
 from settings import Settings
 from entities.ship import Ship
 from entities.bullet import Bullet
 from entities.alien import Alien
+from entities.GameStats import GameStats
 
 class SpaceInvaders:
     """Main class to control game behavior"""
@@ -18,11 +20,12 @@ class SpaceInvaders:
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Space invaders")
 
-        self.ship = Ship(self)
+        self.game_Active = True
+        self.stats = GameStats(self)
 
+        self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-
         self._create_fleet()
 
 
@@ -30,11 +33,13 @@ class SpaceInvaders:
         """Game loop"""
         while True:
             self._check_events()
-            self.ship .update()
-            self._update_bullets()
-            self._update_aliens()
-            self._update_screen()
 
+            if self.game_Active:
+                self.ship .update()
+                self._update_bullets()
+                self._update_aliens()
+            
+            self._update_screen()
             pygame.display.flip()
 
 
@@ -96,6 +101,10 @@ class SpaceInvaders:
                 self.bullets.remove(bullet)
 
 
+    def _check_bullet_collisions(self):
+        colisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+
+
     def _create_fleet(self):
         """Create a alien fleet"""
 
@@ -116,6 +125,7 @@ class SpaceInvaders:
 
 
     def _create_alien(self, alien_number, row_number):
+        """Create an alien"""
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
         alien.x = alien_width + 2 * alien_width * alien_number
@@ -125,8 +135,14 @@ class SpaceInvaders:
 
 
     def _update_aliens(self):
+        """Update aliens"""
         self._check_fleet_edges()
         self.aliens.update()
+
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+
+        self._check_alien_bottom()
 
 
     def _check_fleet_edges(self):
@@ -142,6 +158,30 @@ class SpaceInvaders:
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
+
+
+    def _ship_hit(self):
+        "Hit controlller"
+        self.stats.ship_left -= 1
+        if(self.stats.ship_left <= 0):
+            self.game_Active = False
+        else:
+            self.aliens.empty()
+            self.bullets.empty()
+            
+            self._create_fleet()
+            self.ship.center_ship()
+
+            sleep(0.5)
+        
+
+    def _check_alien_bottom(self):
+        """Check if a alien touch the bottom screen"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                self._ship_hit()
+                break
 
 
 if __name__ == '__main__':

@@ -30,3 +30,8 @@ class Ship:
     def blitme(self):
         """Draw ship"""
         self.screen.blit(self.image, self.rect)
+
+    def center_ship(self):
+        """Center ship on screen"""
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
